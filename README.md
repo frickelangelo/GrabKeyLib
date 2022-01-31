@@ -8,7 +8,7 @@ Provides an interface for reading pressed keys.
 #include "kbd_reader.h"
 
 int main() {
-	auto kbd = keyboard::KeyboardReader::run();
+    auto kbd = keyboard::KeyboardReader::run();
     while (kbd.is_running()) {
         switch (kbd.get_key()) {
             case keyboard::Key::UP: std::cout << "\033[1A"; break;
