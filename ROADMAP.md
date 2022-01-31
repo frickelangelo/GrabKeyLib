@@ -37,5 +37,5 @@ Events will occur only in SingleMode
 - IgnoreMode: all pressed keys in this mode will be ignored
 - EchoMode: all pressed keys will be simply redirected to output
 - NormalMode: all pressed keys will be buffered until a specified key is pressed (buffer_length, on_buffer_overflow_handler, on_key_pressed_handler)
-- GrabMode: all pressed keys will be buffered
+- EventMode: subscribtion on keydown events. Conceptionally two objects: Filter + Handler. Key that is filtered out will be ignored.
 
