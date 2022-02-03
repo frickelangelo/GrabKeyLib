@@ -53,12 +53,12 @@ void KeyboardReaderImpl::stop() {
     if (!is_running())
         return;
 
+    _running = false;
     _poll.stop_polling();
+    _read_thread.join();
+
     _poll.unsubscribe();
     _mode.deactivate();
-    _running = false;
-
-    _read_thread.join();
 }
 
 keyboard::Key KeyboardReaderImpl::get_key() {
