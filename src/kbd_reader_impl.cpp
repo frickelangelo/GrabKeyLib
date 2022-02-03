@@ -54,7 +54,7 @@ void KeyboardReaderImpl::stop() {
         return;
 
     _running = false;
-    _poll.stop_polling();
+    _poll.interrupt();
     _read_thread.join();
 
     _poll.unsubscribe();

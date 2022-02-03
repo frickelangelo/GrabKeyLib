@@ -9,7 +9,7 @@ namespace keyboard {
 
 class KeyboardPoller {
     int _epoll_fd;
-    int _stop_fd;
+    int _interrupt_fd;
 
 public:
     static KeyboardPoller create(int fd, uint32_t event_types);
@@ -26,7 +26,7 @@ public:
     using Buffer = std::vector<char>;
 
     std::vector<Buffer> poll(int timeout);
-    void stop_polling();
+    void interrupt();
 
     static KeyboardPoller subscribe_on_stdin();
     void unsubscribe();
