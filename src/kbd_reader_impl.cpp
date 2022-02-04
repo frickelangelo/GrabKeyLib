@@ -4,6 +4,7 @@
 #include "kbd_keys.h"
 #include "kbd_poller.h"
 #include "kbd_reader.h"
+#include "kbd_reader_mode.h"
 #include "raw_mode.h"
 
 // STL includes
@@ -23,8 +24,8 @@
 
 namespace keyboard {
 
-KeyboardReaderImpl::KeyboardReaderImpl(terminal::RawMode mode, KeyboardPoller poll)
-    : _running(false), _mode(std::move(mode)), _poll(std::move(poll)) {}
+KeyboardReaderImpl::KeyboardReaderImpl(terminal::RawMode terminal_mode, KeyboardReaderMode reader_mode, KeyboardPoller poll)
+    : _running(false), _terminal_mode(std::move(terminal_mode)) , _reader_mode(reader_mode) , _poll(std::move(poll)) {}
 
 KeyboardReaderImpl::~KeyboardReaderImpl() {
     try { stop(); } catch (std::exception& ex) { std::cerr << "At~: " << ex.what() << std::endl; }
@@ -41,9 +42,12 @@ void KeyboardReaderImpl::run(std::chrono::milliseconds timeout) {
     _read_thread = std::thread([this, timeout] {
         while (_running) {
             for (const auto& buffer : _poll.poll(timeout.count())) {
-                std::lock_guard<std::mutex> lk(_m);
-                _keys.emplace_back(ParseSequence(buffer.data(), buffer.size()));
-                _cv.notify_one();
+                switch (_reader_mode) {
+                    case KeyboardReaderMode::IGNORE: break;
+                    case KeyboardReaderMode::NORMAL: _process(buffer); break;
+                    case KeyboardReaderMode::PRINT:  _print(buffer); break;
+                    case KeyboardReaderMode::EVENTS: throw std::runtime_error("Not implemented"); break;
+                }
             }
         }
     });
@@ -58,16 +62,48 @@ void KeyboardReaderImpl::stop() {
     _read_thread.join();
 
     _poll.unsubscribe();
-    _mode.deactivate();
+    _terminal_mode.deactivate();
+}
+
+void KeyboardReaderImpl::_print(const KeyboardPoller::Buffer& buffer) {
+    for (const auto& c : buffer) {
+        if (c == 27)
+            std::cout << "^[";
+        else
+            std::cout << c;
+    }
+    
+    std::cout << std::flush;
+}
+
+void KeyboardReaderImpl::_process(const KeyboardPoller::Buffer& buffer) {
+    std::lock_guard<std::mutex> lk(_m);
+    _keys.emplace_back(keyboard::ParseSequence(buffer.data(), buffer.size()));
+    _cv.notify_one();
 }
 
 keyboard::Key KeyboardReaderImpl::get_key() {
-    std::unique_lock<std::mutex> lk(_m);
-    _cv.wait(lk, [this]{ return !_keys.empty(); });
+
+    if (_reader_mode == KeyboardReaderMode::NORMAL) {
+        std::unique_lock<std::mutex> lk(_m);
+        _cv.wait(lk, [this]{ return !_keys.empty(); });
+        
+        auto key = _keys.front();
+        _keys.pop_front();
+        return key;
+    }
     
-    auto key = _keys.front();
-    _keys.pop_front();
-    return key;
+    return keyboard::Key::NONE;
+}
+
+void KeyboardReaderImpl::set_mode(KeyboardReaderMode reader_mode) {
+    if (_reader_mode == reader_mode)
+        return;
+    
+    _reader_mode = reader_mode;
+
+    std::lock_guard<std::mutex> lk(_m);
+    _keys.clear();
 }
 
 }

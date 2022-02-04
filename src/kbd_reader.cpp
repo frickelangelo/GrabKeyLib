@@ -7,10 +7,10 @@ KeyboardReader::KeyboardReader(std::shared_ptr<KeyboardReaderImpl> impl) : _impl
 
 bool KeyboardReader::is_running() const { return static_cast<bool>(_impl); }
 
-KeyboardReader KeyboardReader::run() {
+KeyboardReader KeyboardReader::run(KeyboardReaderMode reader_mode) {
 
         auto impl = std::make_shared<KeyboardReaderImpl>(
-            terminal::RawMode::activate(),
+            terminal::RawMode::activate(), reader_mode,
             keyboard::KeyboardPoller::subscribe_on_stdin()
             );
 
@@ -18,6 +18,8 @@ KeyboardReader KeyboardReader::run() {
         
         return KeyboardReader(impl);
 }
+
+void KeyboardReader::set_mode(KeyboardReaderMode reader_mode) { _impl->set_mode(reader_mode); }
 
 void KeyboardReader::stop()  {
     if (is_running())
