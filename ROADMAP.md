@@ -17,6 +17,7 @@
 - Examples (code samples for short start)
 - Split build commands on debug and release
 - Cygwin support
+- Performance optimization
 
 ## Features
 
