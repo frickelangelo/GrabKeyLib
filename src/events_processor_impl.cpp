@@ -59,7 +59,11 @@ void EventsProcessorImpl::process(keyboard::Key key) {
 
 }
 
-EventsConfig EventsProcessorImpl::get_config() { return _config; }
+EventsConfig EventsProcessorImpl::get_config() {
+    std::lock_guard<std::mutex> lock(_cfg_mtx);
+
+    return _config;
+}
 
 void EventsProcessorImpl::apply_config(const EventsConfig& config) {
     apply_config(EventsConfig(config));
