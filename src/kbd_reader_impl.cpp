@@ -54,7 +54,7 @@ void KeyboardReaderImpl::run(std::chrono::milliseconds timeout) {
 }
 
 void KeyboardReaderImpl::stop() {
-    if (!is_running())
+    if (!_running.exchange(false))
         return;
 
     _running = false;

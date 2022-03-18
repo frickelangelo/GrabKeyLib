@@ -3,6 +3,7 @@
 #include "kbd_reader_impl.h"
 #include "kbd_reader_mode.h"
 
+
 namespace keyboard {
 
 class KeyboardReader {
@@ -12,6 +13,7 @@ class KeyboardReader {
     
 public:
     static KeyboardReader run(KeyboardReaderMode reader_mode = KeyboardReaderMode::NORMAL);
+
     void set_mode(KeyboardReaderMode reader_mode);
     bool is_running() const;
     void stop();

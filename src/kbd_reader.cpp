@@ -1,11 +1,13 @@
 #include "kbd_reader.h"
 #include "raw_mode.h"
+#include <memory>
+
 
 namespace keyboard {
 
 KeyboardReader::KeyboardReader(std::shared_ptr<KeyboardReaderImpl> impl) : _impl(impl) {}
 
-bool KeyboardReader::is_running() const { return static_cast<bool>(_impl); }
+bool KeyboardReader::is_running() const { return static_cast<bool>(_impl) && _impl->is_running(); }
 
 KeyboardReader KeyboardReader::run(KeyboardReaderMode reader_mode) {
 
@@ -16,7 +18,7 @@ KeyboardReader KeyboardReader::run(KeyboardReaderMode reader_mode) {
 
         impl->run(std::chrono::seconds(10));
         
-        return KeyboardReader(impl);
+        return KeyboardReader(std::move(impl));
 }
 
 void KeyboardReader::set_mode(KeyboardReaderMode reader_mode) { _impl->set_mode(reader_mode); }

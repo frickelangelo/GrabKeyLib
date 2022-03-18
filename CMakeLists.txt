@@ -15,10 +15,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(SOURCES
     src/raw_mode.cpp
+    
     src/kbd_reader.cpp
     src/kbd_poller.cpp
     src/kbd_reader_impl.cpp
     src/kbd_key_parser.cpp
+
+    src/events_processor_impl.cpp
+    src/events_processor.cpp
 )
 
 add_library(pureObjects OBJECT ${SOURCES})

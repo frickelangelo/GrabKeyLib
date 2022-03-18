@@ -18,6 +18,7 @@
 - Split build commands on debug and release
 - Cygwin support
 - Performance optimization
+- Fix codestyle
 
 ## Features
 
@@ -31,7 +32,7 @@
 *Key down events subscription (for the keys specified by user, i.e. filtered)*
 Events will occur only in SingleMode
 
-### Extend list of output keys
+### Extend list of keyboard keys
 
 ### Modes
 
