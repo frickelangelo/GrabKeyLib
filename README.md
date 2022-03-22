@@ -9,9 +9,14 @@ Provides an interface for reading pressed keys.
 #include "kbd_reader.h"
 
 int main() {
+    // start reader
     auto kbd = keyboard::KeyboardReader::run();
+
+    // set loop conditions
     while (kbd.is_running()) {
+        // wait for a key pressed
         switch (kbd.get_key()) {
+            // handle the key
             case keyboard::Key::UP:    std::cout << "\033[1A"; break;
             case keyboard::Key::DOWN:  std::cout << "\033[1B"; break;
             case keyboard::Key::RIGHT: std::cout << "\033[1C"; break;
@@ -19,9 +24,13 @@ int main() {
             case keyboard::Key::ESC:   kbd.stop();             break;
         }
     }
+
+    // stop the reader
     kbd.stop();
 } // main
 ```
+
+
 
 ### Events processor (configuring processor after starting)
 
@@ -58,6 +67,8 @@ int main() {
     processor.join();
 } // main
 ```
+
+
 
 ### Events processor (configuring processor before starting)
 
