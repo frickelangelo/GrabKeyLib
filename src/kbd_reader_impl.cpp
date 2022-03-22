@@ -46,7 +46,6 @@ void KeyboardReaderImpl::run(std::chrono::milliseconds timeout) {
                     case KeyboardReaderMode::IGNORE: break;
                     case KeyboardReaderMode::NORMAL: _process(buffer); break;
                     case KeyboardReaderMode::PRINT:  _print(buffer); break;
-                    case KeyboardReaderMode::EVENTS: throw std::runtime_error("Not implemented"); break;
                 }
             }
         }
