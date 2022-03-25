@@ -16,7 +16,7 @@
 - License
 - Examples (code samples for short start)
 - Split build commands on debug and release
-- Cygwin support
+- Cygwin support (no epoll - find workaround)
 - Performance optimization
 - Fix codestyle
 
