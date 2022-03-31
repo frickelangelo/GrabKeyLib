@@ -17,7 +17,7 @@ public:
     void set_mode(KeyboardReaderMode reader_mode);
     bool is_running() const;
     void stop();
-    Key get_key() const;
+    Key get_key(bool certain = false) const;
 };
 
 }

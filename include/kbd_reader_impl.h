@@ -39,7 +39,7 @@ public:
     bool is_running() const;
 
     // pop keys from internal buffer
-    Key get_key();
+    Key get_key(bool certain);
 
     void set_mode(KeyboardReaderMode reader_mode);
 };

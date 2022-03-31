@@ -81,14 +81,18 @@ void KeyboardReaderImpl::_process(const KeyboardPoller::Buffer& buffer) {
     _cv.notify_one();
 }
 
-keyboard::Key KeyboardReaderImpl::get_key() {
+keyboard::Key KeyboardReaderImpl::get_key(bool certain) {
 
-    if (_reader_mode == KeyboardReaderMode::NORMAL) {
+    while (_reader_mode == KeyboardReaderMode::NORMAL || certain) {
         std::unique_lock<std::mutex> lk(_m);
         _cv.wait(lk, [this]{ return !_keys.empty(); });
         
         auto key = _keys.front();
         _keys.pop_front();
+
+        if (certain && key == keyboard::Key::NONE)
+            continue;
+            
         return key;
     }
     

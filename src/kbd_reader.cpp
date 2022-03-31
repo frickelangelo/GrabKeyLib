@@ -30,9 +30,9 @@ void KeyboardReader::stop()  {
     _impl.reset();
 }
 
-Key KeyboardReader::get_key() const {
+Key KeyboardReader::get_key(bool certain) const {
     if (is_running())
-        return _impl->get_key();
+        return _impl->get_key(certain);
     
     return Key::NONE;
 }

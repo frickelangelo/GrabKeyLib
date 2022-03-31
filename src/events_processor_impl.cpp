@@ -33,7 +33,7 @@ void EventsProcessorImpl::run() {
 
     _thread = std::thread([this] {
         while (_reader.is_running())
-            process(_reader.get_key());
+            process(_reader.get_key(true));
     });
 
 }
