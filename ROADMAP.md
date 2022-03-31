@@ -14,7 +14,6 @@
 - Build package (rpm/deb)
 - Documentation
 - License
-- Examples (code samples for short start)
 - Split build commands on debug and release
 - Cygwin support (no epoll - find workaround)
 - Performance optimization
@@ -27,17 +26,5 @@
 - Implement interface and use it in as many places as it required to forget about debugger.
 - Consider of creation of header only logging library.
 
-### Event-driven API
-
-*Key down events subscription (for the keys specified by user, i.e. filtered)*
-Events will occur only in SingleMode
-
 ### Extend list of keyboard keys
-
-### Modes
-
-- IgnoreMode: all pressed keys in this mode will be ignored
-- EchoMode: all pressed keys will be simply redirected to output
-- NormalMode: all pressed keys will be buffered until a specified key is pressed (buffer_length, on_buffer_overflow_handler, on_key_pressed_handler)
-- EventMode: subscribtion on keydown events. Conceptionally two objects: Filter + Handler. Key that is filtered out will be ignored.
 
