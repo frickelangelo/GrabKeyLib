@@ -7,7 +7,7 @@ namespace keyboard {
 
 KeyboardReader::KeyboardReader(std::shared_ptr<KeyboardReaderImpl> impl) : _impl(impl) {}
 
-bool KeyboardReader::is_running() const { return static_cast<bool>(_impl) && _impl->is_running(); }
+bool KeyboardReader::is_running() const { return _impl->is_running(); }
 
 KeyboardReader KeyboardReader::run(KeyboardReaderMode reader_mode) {
 
@@ -22,19 +22,7 @@ KeyboardReader KeyboardReader::run(KeyboardReaderMode reader_mode) {
 }
 
 void KeyboardReader::set_mode(KeyboardReaderMode reader_mode) { _impl->set_mode(reader_mode); }
-
-void KeyboardReader::stop()  {
-    if (is_running())
-        _impl->stop();
-
-    _impl.reset();
-}
-
-Key KeyboardReader::get_key(bool certain) const {
-    if (is_running())
-        return _impl->get_key(certain);
-    
-    return Key::NONE;
-}
+void KeyboardReader::stop()  { _impl->stop(); }
+Key KeyboardReader::get_key(bool certain) const { return _impl->get_key(certain); }
 
 }
