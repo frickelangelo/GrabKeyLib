@@ -11,6 +11,7 @@ static constexpr std::array<char, 3> seq_up   { 27, 91, 65 };
 static constexpr std::array<char, 3> seq_down { 27, 91, 66 };
 static constexpr std::array<char, 3> seq_right { 27, 91, 67 };
 static constexpr std::array<char, 3> seq_left { 27, 91, 68 };
+static constexpr std::array<char, 1> seq_enter { '\n' };
 
 Key ParseSequence(const char* data, size_t size) {
        
@@ -28,6 +29,9 @@ Key ParseSequence(const char* data, size_t size) {
     
     if (size == seq_left.size() && std::equal(seq_left.cbegin(), seq_left.cend(), data))
         return keyboard::Key::LEFT;
+
+    if (size == seq_enter.size() && std::equal(seq_enter.cbegin(), seq_enter.cend(), data))
+        return keyboard::Key::ENTER;
 
     return keyboard::Key::NONE;
 }
