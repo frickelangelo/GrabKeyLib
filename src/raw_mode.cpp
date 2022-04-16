@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <utility>
-
+#include <string>
 
 namespace terminal {
 

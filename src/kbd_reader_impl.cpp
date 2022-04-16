@@ -16,11 +16,6 @@
 #include <thread>
 #include <vector>
 
-// POSIX includes
-#include <unistd.h>
-#include <sys/epoll.h>
-#include <sys/eventfd.h>
-
 
 namespace keyboard {
 
