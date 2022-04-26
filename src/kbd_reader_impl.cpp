@@ -2,7 +2,6 @@
 #include "kbd_reader_impl.h"
 #include "kbd_key_parser.h"
 #include "kbd_keys.h"
-#include "kbd_poller.h"
 #include "kbd_reader.h"
 #include "kbd_reader_mode.h"
 #include "raw_mode.h"
@@ -33,6 +32,7 @@ void KeyboardReaderImpl::run(std::chrono::milliseconds timeout) {
         return;
 
     _read_thread = std::thread([this, timeout] {
+        (void)timeout;
         while (_running) {
             for (const auto& buffer : _poll.poll(timeout.count())) {
                 switch (_reader_mode) {

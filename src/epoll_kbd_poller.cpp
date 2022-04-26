@@ -1,4 +1,4 @@
-#include "kbd_poller.h"
+#include "epoll_kbd_poller.h"
 #include "kbd_key_parser.h"
 #include "raw_mode.h"
 #include "kbd_keys.h"
@@ -16,7 +16,7 @@
 
 namespace keyboard {
 
-KeyboardPoller KeyboardPoller::create(int fd, uint32_t event_types) {
+EpollKeyboardPoller EpollKeyboardPoller::create(int fd, uint32_t event_types) {
     try {
         int epoll_fd = epoll_create(1);
         if (epoll_fd == -1)
@@ -40,21 +40,21 @@ KeyboardPoller KeyboardPoller::create(int fd, uint32_t event_types) {
         if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, interrupt_fd, &interrupt_event))
             throw std::runtime_error(std::string("interrupt event epoll_ctl(ADD) error: ") + strerror(errno));
 
-        return KeyboardPoller(epoll_fd, interrupt_fd);
+        return EpollKeyboardPoller(epoll_fd, interrupt_fd);
     } catch (std::exception& ex) {
         throw std::runtime_error(std::string("Failed to create keyboard poller. ") + ex.what());
     }
 }
 
-KeyboardPoller::KeyboardPoller(int epoll_fd, int stop_fd)
+EpollKeyboardPoller::EpollKeyboardPoller(int epoll_fd, int stop_fd)
     : _epoll_fd(epoll_fd), _interrupt_fd(stop_fd) {}
 
-KeyboardPoller::KeyboardPoller(KeyboardPoller&& other)
+EpollKeyboardPoller::EpollKeyboardPoller(EpollKeyboardPoller&& other)
     : _epoll_fd(std::exchange(other._epoll_fd, -1))
     , _interrupt_fd(std::exchange(other._interrupt_fd, -1))
 {}
 
-KeyboardPoller::~KeyboardPoller() {
+EpollKeyboardPoller::~EpollKeyboardPoller() {
     if (_epoll_fd == -1 && _interrupt_fd == -1)
         return;
 
@@ -64,7 +64,7 @@ KeyboardPoller::~KeyboardPoller() {
     } catch (...) {}
 }
 
-std::vector<KeyboardPoller::Buffer> KeyboardPoller::poll(int timeout) {
+std::vector<EpollKeyboardPoller::Buffer> EpollKeyboardPoller::poll(int timeout) {
     constexpr auto max_events_number = 10;
     std::array<struct epoll_event, max_events_number> events{};
 
@@ -85,15 +85,15 @@ std::vector<KeyboardPoller::Buffer> KeyboardPoller::poll(int timeout) {
     return result;
 }
 
-void KeyboardPoller::interrupt() {
+void EpollKeyboardPoller::interrupt() {
     uint64_t u = 1;
     if (write(_interrupt_fd, &u, sizeof(uint64_t)) != sizeof(uint64_t))
         throw std::runtime_error(std::string("Interrupt polling error: ") + strerror(errno));
 }
 
-KeyboardPoller KeyboardPoller::subscribe_on_stdin() { return KeyboardPoller::create(STDIN_FILENO, EPOLLIN); }
+EpollKeyboardPoller EpollKeyboardPoller::subscribe_on_stdin() { return EpollKeyboardPoller::create(STDIN_FILENO, EPOLLIN); }
 
-void KeyboardPoller::unsubscribe() {
+void EpollKeyboardPoller::unsubscribe() {
     if (close(_epoll_fd) != 0)
         throw std::runtime_error(std::string("Epoll fd close error: ") + strerror(errno));
 }

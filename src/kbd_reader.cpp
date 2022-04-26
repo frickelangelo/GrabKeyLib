@@ -1,7 +1,6 @@
 #include "kbd_reader.h"
 #include "raw_mode.h"
-#include <memory>
-
+#include "kbd_poller.h"
 
 namespace keyboard {
 

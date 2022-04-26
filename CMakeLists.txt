@@ -13,17 +13,37 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/static)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/shared)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+
+set(LINUX_SOURCES
+    src/epoll_kbd_poller.cpp
+)
+
+set(MACOS_SOURCES
+    src/kqueue_kbd_poller.cpp
+)
+
+if (WIN32)
+    message("Unsupported")
+elseif (APPLE)
+    set(PLATFORM_SPECIFIC_SOURCES ${MACOS_SOURCES})
+elseif (UNIX)
+    set(PLATFORM_SPECIFIC_SOURCES ${LINUX_SOURCES})
+endif()
+
+
 set(SOURCES
+    ${PLATFORM_SPECIFIC_SOURCES}
+
     src/raw_mode.cpp
     
     src/kbd_reader.cpp
-    src/kbd_poller.cpp
     src/kbd_reader_impl.cpp
     src/kbd_key_parser.cpp
 
     src/events_processor_impl.cpp
     src/events_processor.cpp
 )
+
 
 add_library(pureObjects OBJECT ${SOURCES})
 set_property(TARGET pureObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
