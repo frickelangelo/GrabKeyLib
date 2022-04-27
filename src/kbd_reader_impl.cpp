@@ -32,7 +32,6 @@ void KeyboardReaderImpl::run(std::chrono::milliseconds timeout) {
         return;
 
     _read_thread = std::thread([this, timeout] {
-        (void)timeout;
         while (_running) {
             for (const auto& buffer : _poll.poll(timeout.count())) {
                 switch (_reader_mode) {
