@@ -6,6 +6,7 @@
   - Unit tests (cmake compatible)
   - manual test (CLI application to use the library's abilities in interactive mode)
 - Old systems support
+- C wrapper?
 - Test on different terminals
 - Multiple compilers support (at least gcc and clang)
 - Output static / shared / single header (https://github.com/Viatorus/quom)
