@@ -9,13 +9,20 @@ include(CTest)
 enable_testing()
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/static)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/shared)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(LINUX_HEADERS
+    include/epoll_kbd_poller.h
+)
 
 set(LINUX_SOURCES
     src/epoll_kbd_poller.cpp
+)
+
+set(MACOS_HEADERS
+    include/kqueue_kbd_poller.h
 )
 
 set(MACOS_SOURCES
@@ -25,11 +32,27 @@ set(MACOS_SOURCES
 if (WIN32)
     message("Unsupported")
 elseif (APPLE)
+    set(PLATFORM_SPECIFIC_HEADERS ${MACOS_HEADERS})
     set(PLATFORM_SPECIFIC_SOURCES ${MACOS_SOURCES})
 elseif (UNIX)
+    set(PLATFORM_SPECIFIC_HEADERS ${LINUX_HEADERS})
     set(PLATFORM_SPECIFIC_SOURCES ${LINUX_SOURCES})
 endif()
 
+set(HEADERS
+    ${PLATFORM_SPECIFIC_HEADERS}
+    include/events_config.h
+    include/events_filter.h
+    include/events_processor_impl.h
+    include/events_processor.h
+    include/kbd_key_parser.h
+    include/kbd_keys.h
+    include/kbd_poller.h
+    include/kbd_reader_impl.h
+    include/kbd_reader.h
+    include/kbd_reader_mode.h
+    include/raw_mode.h
+)
 
 set(SOURCES
     ${PLATFORM_SPECIFIC_SOURCES}
@@ -58,11 +81,15 @@ target_include_directories(pureObjects PUBLIC include)
 target_link_libraries(pureObjects PUBLIC -lpthread)
 
 add_library(grabKey_shared SHARED $<TARGET_OBJECTS:pureObjects>)
-set_property(TARGET grabKey_shared PROPERTY OUTPUT_NAME GrabKey)
+set_property(TARGET grabKey_shared PROPERTY OUTPUT_NAME GrabKeyShared)
 
 add_library(grabKey_static STATIC $<TARGET_OBJECTS:pureObjects>)
-set_property(TARGET grabKey_static PROPERTY OUTPUT_NAME GrabKey)
+set_property(TARGET grabKey_static PROPERTY OUTPUT_NAME GrabKeyStatic)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
+
+install(TARGETS grabKey_shared DESTINATION "lib/")
+install(TARGETS grabKey_static DESTINATION "lib/")
+install(FILES ${HEADERS} DESTINATION "include/grab-key")
