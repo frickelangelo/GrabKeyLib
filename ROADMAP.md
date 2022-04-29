@@ -1,6 +1,6 @@
 # GrabKey
 
-## Raw ideas
+### Raw ideas
 
 - Tests
   - Unit tests (cmake compatible)
@@ -10,7 +10,7 @@
 - Test on different terminals
 - Multiple compilers support (at least gcc and clang)
 - Output static / shared / single header (https://github.com/Viatorus/quom)
-- Install on system
+- Install on system (linux is working - add macos)
 - Support cmake find feature
 - Build package (rpm/deb)
 - Documentation
@@ -20,12 +20,11 @@
 - Performance optimization
 - Fix codestyle
 
-## Features
+### Problems
+
+- get_key returns a value of Key enum. Extending the enum requires huge effort. The get_key would better return a pair of key sequence (multiple bytes per symbol) and the Key enum value (if the pressed key is not a symbol).
 
 ### Logging
 
 - Implement interface and use it in as many places as it required to forget about debugger.
 - Consider of creation of header only logging library.
-
-### Extend list of keyboard keys
-
