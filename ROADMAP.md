@@ -19,6 +19,7 @@
 - Cygwin support (no epoll - find workaround)
 - Performance optimization
 - Fix codestyle
+- Redesign modes: make get_key to return key's code and move the printing out of keyboard reader logic.
 
 ## Features
 
