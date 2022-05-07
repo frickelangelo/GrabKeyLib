@@ -22,6 +22,14 @@ KeyboardReader KeyboardReader::run(KeyboardReaderMode reader_mode) {
 
 void KeyboardReader::set_mode(KeyboardReaderMode reader_mode) { _impl->set_mode(reader_mode); }
 void KeyboardReader::stop()  { _impl->stop(); }
-Key KeyboardReader::get_key(bool certain) const { return _impl->get_key(certain); }
+
+Key KeyboardReader::get_key(bool certain) const { 
+    std::vector<char> byte_sequence;
+    return this->get_key(byte_sequence, certain);
+}
+
+Key KeyboardReader::get_key(std::vector<char>& byte_sequence, bool certain) const {
+    return _impl->get_key(certain, byte_sequence);
+}
 
 }

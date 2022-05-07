@@ -18,6 +18,7 @@ public:
     bool is_running() const;
     void stop();
     Key get_key(bool certain = false) const;
+    Key get_key(std::vector<char>& byte_sequence, bool certain = false) const;
 };
 
 }

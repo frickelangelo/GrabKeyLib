@@ -15,15 +15,15 @@ namespace keyboard {
 class KeyboardReaderImpl {
     std::mutex _m;
     std::condition_variable _cv;
-    std::deque<Key> _keys;
+    std::deque<std::vector<char>> _byte_sequences;
     std::atomic<bool> _running;
     terminal::RawMode _terminal_mode;
     std::atomic<KeyboardReaderMode> _reader_mode;
     KeyboardPoller _poll;
     std::thread _read_thread;
 
-    void _print(const KeyboardPoller::Buffer& buffer);
-    void _process(const KeyboardPoller::Buffer& buffer);
+    void _print(KeyboardPoller::Buffer buffer);
+    void _process(KeyboardPoller::Buffer buffer);
 
 public:
     KeyboardReaderImpl(terminal::RawMode terminal_mode, KeyboardReaderMode reader_mode, KeyboardPoller poll);
@@ -39,7 +39,7 @@ public:
     bool is_running() const;
 
     // pop keys from internal buffer
-    Key get_key(bool certain);
+    Key get_key(bool certain, std::vector<char>& byte_sequence);
 
     void set_mode(KeyboardReaderMode reader_mode);
 };

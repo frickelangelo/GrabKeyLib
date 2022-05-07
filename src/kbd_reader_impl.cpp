@@ -33,11 +33,11 @@ void KeyboardReaderImpl::run(std::chrono::milliseconds timeout) {
 
     _read_thread = std::thread([this, timeout] {
         while (_running) {
-            for (const auto& buffer : _poll.poll(timeout.count())) {
+            for (auto& buffer : _poll.poll(timeout.count())) {
                 switch (_reader_mode) {
                     case KeyboardReaderMode::IGNORE: break;
-                    case KeyboardReaderMode::NORMAL: _process(buffer); break;
-                    case KeyboardReaderMode::PRINT:  _print(buffer); break;
+                    case KeyboardReaderMode::NORMAL: _process(std::move(buffer)); break;
+                    case KeyboardReaderMode::PRINT:  _print(std::move(buffer)); break;
                 }
             }
         }
@@ -55,7 +55,7 @@ void KeyboardReaderImpl::stop() {
     _terminal_mode.deactivate();
 }
 
-void KeyboardReaderImpl::_print(const KeyboardPoller::Buffer& buffer) {
+void KeyboardReaderImpl::_print(KeyboardPoller::Buffer buffer) {
     for (const auto& c : buffer) {
         if (c == 27)
             std::cout << "^[";
@@ -66,19 +66,21 @@ void KeyboardReaderImpl::_print(const KeyboardPoller::Buffer& buffer) {
     std::cout << std::flush;
 }
 
-void KeyboardReaderImpl::_process(const KeyboardPoller::Buffer& buffer) {
+void KeyboardReaderImpl::_process(KeyboardPoller::Buffer buffer) {
     std::lock_guard<std::mutex> lk(_m);
-    _keys.emplace_back(keyboard::ParseSequence(buffer.data(), buffer.size()));
+    _byte_sequences.emplace_back(std::move(buffer));
     _cv.notify_one();
 }
 
-keyboard::Key KeyboardReaderImpl::get_key(bool certain) {
+keyboard::Key KeyboardReaderImpl::get_key(bool certain, std::vector<char>& byte_sequence) {
     while (_running && (_reader_mode == KeyboardReaderMode::NORMAL || certain)) {
         std::unique_lock<std::mutex> lk(_m);
-        _cv.wait(lk, [this]{ return !_keys.empty(); });
+        _cv.wait(lk, [this]{ return !_byte_sequences.empty(); });
 
-        auto key = _keys.front();
-        _keys.pop_front();
+        byte_sequence = std::move(_byte_sequences.front());
+        _byte_sequences.pop_front();
+
+        auto key = keyboard::ParseSequence(byte_sequence.data(), byte_sequence.size());
 
         if (certain && key == keyboard::Key::NONE)
             continue;
@@ -99,7 +101,7 @@ void KeyboardReaderImpl::set_mode(KeyboardReaderMode reader_mode) {
     _reader_mode = reader_mode;
 
     std::lock_guard<std::mutex> lk(_m);
-    _keys.clear();
+    _byte_sequences.clear();
 }
 
 }

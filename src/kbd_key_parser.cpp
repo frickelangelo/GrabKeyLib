@@ -33,7 +33,7 @@ Key ParseSequence(const char* data, size_t size) {
     if (size == seq_enter.size() && std::equal(seq_enter.cbegin(), seq_enter.cend(), data))
         return keyboard::Key::ENTER;
 
-    return keyboard::Key::NONE;
+    return keyboard::Key::OTHER;
 }
 
 }
