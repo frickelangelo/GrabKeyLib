@@ -11,6 +11,7 @@ namespace keyboard {
 EventsProcessorImpl::EventsProcessorImpl(KeyboardReader kbd_reader, EventsConfig config)
     : _reader(std::move(kbd_reader))
     , _config(std::move(config))
+    , _pause(false)
     {}
 
 EventsProcessorImpl::~EventsProcessorImpl() {
@@ -41,10 +42,13 @@ void EventsProcessorImpl::run() {
 void EventsProcessorImpl::join() { _thread.join(); }
 void EventsProcessorImpl::stop() { _reader.stop(); }
 
-void EventsProcessorImpl::pause() { _reader.set_mode(KeyboardReaderMode::IGNORE); }
-void EventsProcessorImpl::resume() { _reader.set_mode(KeyboardReaderMode::NORMAL); }
+void EventsProcessorImpl::pause()  { _pause.exchange(true);  }
+void EventsProcessorImpl::resume() { _pause.exchange(false); }
 
 void EventsProcessorImpl::process(keyboard::Key key) {
+    if (_pause.load())
+        return;
+
     std::lock_guard<std::mutex> lock(_cfg_mtx);
 
     if (keyboard::evt_handler handler = find_handler(key); handler) {

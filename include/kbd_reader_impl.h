@@ -1,7 +1,6 @@
 #pragma once
 
 #include "kbd_keys.h"
-#include "kbd_reader_mode.h"
 #include "kbd_poller.h"
 #include "raw_mode.h"
 #include <chrono>
@@ -18,7 +17,6 @@ class KeyboardReaderImpl {
     std::deque<std::vector<char>> _byte_sequences;
     std::atomic<bool> _running;
     terminal::RawMode _terminal_mode;
-    std::atomic<KeyboardReaderMode> _reader_mode;
     KeyboardPoller _poll;
     std::thread _read_thread;
 
@@ -26,7 +24,7 @@ class KeyboardReaderImpl {
     void _process(KeyboardPoller::Buffer buffer);
 
 public:
-    KeyboardReaderImpl(terminal::RawMode terminal_mode, KeyboardReaderMode reader_mode, KeyboardPoller poll);
+    KeyboardReaderImpl(terminal::RawMode terminal_mode, KeyboardPoller poll);
 
     ~KeyboardReaderImpl();
 
@@ -40,8 +38,6 @@ public:
 
     // pop keys from internal buffer
     Key get_key(bool certain, std::vector<char>& byte_sequence);
-
-    void set_mode(KeyboardReaderMode reader_mode);
 };
 
 }

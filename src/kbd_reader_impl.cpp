@@ -3,7 +3,6 @@
 #include "kbd_key_parser.h"
 #include "kbd_keys.h"
 #include "kbd_reader.h"
-#include "kbd_reader_mode.h"
 #include "raw_mode.h"
 
 // STL includes
@@ -18,8 +17,8 @@
 
 namespace keyboard {
 
-KeyboardReaderImpl::KeyboardReaderImpl(terminal::RawMode terminal_mode, KeyboardReaderMode reader_mode, KeyboardPoller poll)
-    : _running(false), _terminal_mode(std::move(terminal_mode)) , _reader_mode(reader_mode) , _poll(std::move(poll)) {}
+KeyboardReaderImpl::KeyboardReaderImpl(terminal::RawMode terminal_mode, KeyboardPoller poll)
+    : _running(false), _terminal_mode(std::move(terminal_mode)), _poll(std::move(poll)) {}
 
 KeyboardReaderImpl::~KeyboardReaderImpl() {
     try { stop(); } catch (std::exception& ex) { std::cerr << "At~: " << ex.what() << std::endl; }
@@ -33,13 +32,8 @@ void KeyboardReaderImpl::run(std::chrono::milliseconds timeout) {
 
     _read_thread = std::thread([this, timeout] {
         while (_running) {
-            for (auto& buffer : _poll.poll(timeout.count())) {
-                switch (_reader_mode) {
-                    case KeyboardReaderMode::IGNORE: break;
-                    case KeyboardReaderMode::NORMAL: _process(std::move(buffer)); break;
-                    case KeyboardReaderMode::PRINT:  _print(std::move(buffer)); break;
-                }
-            }
+            for (auto& buffer : _poll.poll(timeout.count()))
+                _process(std::move(buffer));
         }
     });
 }
@@ -73,7 +67,7 @@ void KeyboardReaderImpl::_process(KeyboardPoller::Buffer buffer) {
 }
 
 keyboard::Key KeyboardReaderImpl::get_key(bool certain, std::vector<char>& byte_sequence) {
-    while (_running && (_reader_mode == KeyboardReaderMode::NORMAL || certain)) {
+    while (_running) {
         std::unique_lock<std::mutex> lk(_m);
         _cv.wait(lk, [this]{ return !_byte_sequences.empty(); });
 
@@ -92,16 +86,6 @@ keyboard::Key KeyboardReaderImpl::get_key(bool certain, std::vector<char>& byte_
         throw std::runtime_error("Not a certain key");
 
     return keyboard::Key::NONE;
-}
-
-void KeyboardReaderImpl::set_mode(KeyboardReaderMode reader_mode) {
-    if (_reader_mode == reader_mode)
-        return;
-
-    _reader_mode = reader_mode;
-
-    std::lock_guard<std::mutex> lk(_m);
-    _byte_sequences.clear();
 }
 
 }

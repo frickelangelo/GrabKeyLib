@@ -20,9 +20,6 @@
 - Performance optimization
 - Fix codestyle
 
-### Problems
-
-- get_key returns a value of Key enum. Extending the enum requires huge effort. The get_key would better return a pair of key sequence (multiple bytes per symbol) and the Key enum value (if the pressed key is not a symbol).
 
 ### Logging
 
