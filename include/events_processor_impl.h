@@ -12,6 +12,7 @@ class EventsProcessorImpl {
     EventsConfig _config;
     std::thread _thread;
     std::mutex _cfg_mtx;
+    std::atomic<bool> _pause;
 
     std::unordered_map<keyboard::Key, size_t> _filter_lookup;
 

@@ -1,6 +1,6 @@
 # GrabKey
 
-## Raw ideas
+### Raw ideas
 
 - Tests
   - Unit tests (cmake compatible)
@@ -10,7 +10,7 @@
 - Test on different terminals
 - Multiple compilers support (at least gcc and clang)
 - Output static / shared / single header (https://github.com/Viatorus/quom)
-- Install on system
+- Install on system (linux is working - add macos)
 - Support cmake find feature
 - Build package (rpm/deb)
 - Documentation
@@ -21,12 +21,8 @@
 - Fix codestyle
 - Redesign modes: make get_key to return key's code and move the printing out of keyboard reader logic.
 
-## Features
 
 ### Logging
 
 - Implement interface and use it in as many places as it required to forget about debugger.
 - Consider of creation of header only logging library.
-
-### Extend list of keyboard keys
-
