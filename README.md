@@ -14,23 +14,23 @@ BTW - All the methods of **KeyboardReader** are thread safe.
 #include "kbd_reader.h"
 
 int main() {
-    // start reader
-    auto kbd = keyboard::KeyboardReader::run();
+  // start reader
+  auto kbd = keyboard::KeyboardReader::run();
 
-    // set loop conditions
-    while (kbd.is_running()) {
-        // wait for a key pressed
-        switch (kbd.get_key()) {
-            // handle the key
-            case keyboard::Key::UP:    std::cout <<  "\033[1A";   break;
-            case keyboard::Key::DOWN:  std::cout <<  "\033[1B";   break;
-            case keyboard::Key::RIGHT: std::cout <<  "\033[1C";   break;
-            case keyboard::Key::LEFT:  std::cout <<  "\033[1D";   break;
-            case keyboard::Key::ESC:   kbd.stop(); /*break loop*/ break;
-        }
+  // set loop conditions
+  while (kbd.is_running()) {
+    // wait for a key pressed
+    switch (kbd.get_key()) {
+      // handle the key
+      case keyboard::Key::UP:    std::cout <<  "\033[1A";   break;
+      case keyboard::Key::DOWN:  std::cout <<  "\033[1B";   break;
+      case keyboard::Key::RIGHT: std::cout <<  "\033[1C";   break;
+      case keyboard::Key::LEFT:  std::cout <<  "\033[1D";   break;
+      case keyboard::Key::ESC:   kbd.stop(); /*break loop*/ break;
     }
+  }
 
-  	return 0;
+  return 0;
 } // main
 ```
 
@@ -43,27 +43,27 @@ Getting a byte sequence (ANSI) of the key is also provided - just pass vector of
 #include "kbd_reader.h"
 
 int main() {
-    // start reader
-    auto kbd = keyboard::KeyboardReader::run();
+  // start reader
+  auto kbd = keyboard::KeyboardReader::run();
 
-    // set loop conditions
-    while (kbd.is_running()) {      
-				// create a container
-      	std::vector<char> sequence;
-      	// pass the container inside get_key
-      	// and wait for a key pressed
-        switch (kbd.get_key(sequence)) {
-            // handle the key
-            case keyboard::Key::ESC:   kbd.stop(); /*break loop*/ break;
-          	default:
-            		std::cout << "sequence: ";
-            		for (const auto& c : sequence)
-                  	std::cout << (int)c; // print the ANSI sequence
-            		std::cout << std::endl; // is also performs flush
-        }
+  // set loop conditions
+  while (kbd.is_running()) {      
+    // create a container
+    std::vector<char> sequence;
+    // pass the container inside get_key
+    // and wait for a key pressed
+    switch (kbd.get_key(sequence)) {
+      // handle the key
+      case keyboard::Key::ESC:   kbd.stop(); /*break loop*/ break;
+      default:
+        std::cout << "sequence: ";
+        for (const auto& c : sequence)
+          std::cout << (int)c; // print the ANSI sequence
+        std::cout << std::endl; // is also performs flush
     }
+  }
 
-  	return 0;
+  return 0;
 } // main
 ~~~
 
