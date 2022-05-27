@@ -37,7 +37,7 @@ public:
     bool is_running() const;
 
     // pop keys from internal buffer
-    Key get_key(bool certain, std::vector<char>& byte_sequence);
+    Key get_key(std::vector<char>& byte_sequence);
 };
 
 }

@@ -21,13 +21,13 @@ KeyboardReader KeyboardReader::run() {
 
 void KeyboardReader::stop()  { _impl->stop(); }
 
-Key KeyboardReader::get_key(bool certain) const { 
+Key KeyboardReader::get_key() const { 
     std::vector<char> byte_sequence;
-    return this->get_key(byte_sequence, certain);
+    return this->get_key(byte_sequence);
 }
 
-Key KeyboardReader::get_key(std::vector<char>& byte_sequence, bool certain) const {
-    return _impl->get_key(certain, byte_sequence);
+Key KeyboardReader::get_key(std::vector<char>& byte_sequence) const {
+    return _impl->get_key(byte_sequence);
 }
 
 }

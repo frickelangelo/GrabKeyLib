@@ -66,7 +66,7 @@ void KeyboardReaderImpl::_process(KeyboardPoller::Buffer buffer) {
     _cv.notify_one();
 }
 
-keyboard::Key KeyboardReaderImpl::get_key(bool certain, std::vector<char>& byte_sequence) {
+keyboard::Key KeyboardReaderImpl::get_key(std::vector<char>& byte_sequence) {
     while (_running) {
         std::unique_lock<std::mutex> lk(_m);
         _cv.wait(lk, [this]{ return !_byte_sequences.empty(); });
@@ -76,14 +76,8 @@ keyboard::Key KeyboardReaderImpl::get_key(bool certain, std::vector<char>& byte_
 
         auto key = keyboard::ParseSequence(byte_sequence.data(), byte_sequence.size());
 
-        if (certain && key == keyboard::Key::NONE)
-            continue;
-
         return key;
     }
-
-    if (certain)
-        throw std::runtime_error("Not a certain key");
 
     return keyboard::Key::NONE;
 }
