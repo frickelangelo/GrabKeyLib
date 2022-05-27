@@ -28,19 +28,6 @@ static constexpr std::array<char, 5> seq_f10 { 27, 91, 50, 49, 126 };
 static constexpr std::array<char, 5> seq_f11 { 27, 91, 50, 51, 126 };
 static constexpr std::array<char, 5> seq_f12 { 27, 91, 50, 52, 126 };
 
-static constexpr std::array<char, 5> seq_alt_f1 { 27, 91, 49, 55, 126 };
-static constexpr std::array<char, 5> seq_alt_f2 { 27, 91, 49, 56, 126 };
-static constexpr std::array<char, 5> seq_alt_f3 { 27, 91, 49, 57, 126 };
-static constexpr std::array<char, 5> seq_alt_f4 { 27, 91, 50, 48, 126 };
-static constexpr std::array<char, 5> seq_alt_f5 { 27, 91, 50, 49, 126 };
-static constexpr std::array<char, 5> seq_alt_f6 { 27, 91, 50, 51, 126 };
-static constexpr std::array<char, 5> seq_alt_f7 { 27, 91, 50, 52, 126 };
-static constexpr std::array<char, 5> seq_alt_f8 { 27, 91, 50, 53, 126 };
-static constexpr std::array<char, 5> seq_alt_f9 { 27, 91, 50, 54, 126 };
-static constexpr std::array<char, 5> seq_alt_f10 { 27, 91, 50, 56, 126 };
-static constexpr std::array<char, 5> seq_alt_f11 { 27, 91, 50, 57, 126 };
-static constexpr std::array<char, 5> seq_alt_f12 { 27, 91, 51, 49, 126 };
-
 
 Key ParseSequence(const char* data, size_t size) {
     
@@ -71,19 +58,6 @@ Key ParseSequence(const char* data, size_t size) {
     if (equal(seq_f11)) return keyboard::Key::F11;
     if (equal(seq_f12)) return keyboard::Key::F12;
     
-    if (equal(seq_alt_f1)) return keyboard::Key::ALT_F1;
-    if (equal(seq_alt_f2)) return keyboard::Key::ALT_F2;
-    if (equal(seq_alt_f3)) return keyboard::Key::ALT_F3;
-    if (equal(seq_alt_f4)) return keyboard::Key::ALT_F4;
-    if (equal(seq_alt_f5)) return keyboard::Key::ALT_F5;
-    if (equal(seq_alt_f6)) return keyboard::Key::ALT_F6;
-    if (equal(seq_alt_f7)) return keyboard::Key::ALT_F7;
-    if (equal(seq_alt_f8)) return keyboard::Key::ALT_F8;
-    if (equal(seq_alt_f9)) return keyboard::Key::ALT_F9;
-    if (equal(seq_alt_f10)) return keyboard::Key::ALT_F10;
-    if (equal(seq_alt_f11)) return keyboard::Key::ALT_F11;
-    if (equal(seq_alt_f12)) return keyboard::Key::ALT_F12;
-
     return keyboard::Key::OTHER;
 }
 
