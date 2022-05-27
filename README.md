@@ -10,6 +10,7 @@ The code below allows to control cursor's position in terminal with using keyboa
 BTW - All the methods of **KeyboardReader** are thread safe.
 
 ```c++
+#include "kbd_keys.h"
 #include "kbd_reader.h"
 
 int main() {
@@ -35,6 +36,41 @@ int main() {
 
 
 
+Getting a byte sequence (ANSI) of the key is also provided - just pass vector of char like the below.
+
+~~~c++
+#include "kbd_keys.h"
+#include "kbd_reader.h"
+
+int main() {
+    // start reader
+    auto kbd = keyboard::KeyboardReader::run();
+
+    // set loop conditions
+    while (kbd.is_running()) {      
+				// create a container
+      	std::vector<char> sequence;
+      	// pass the container inside get_key
+      	// and wait for a key pressed
+        switch (kbd.get_key(sequence)) {
+            // handle the key
+            case keyboard::Key::ESC:   kbd.stop(); /*break loop*/ break;
+          	default:
+            		std::cout << "sequence: ";
+            		for (const auto& c : sequence)
+                  	std::cout << (int)c; // print the ANSI sequence
+            		std::cout << std::endl; // is also performs flush
+        }
+    }
+
+  	return 0;
+} // main
+~~~
+
+
+
+
+
 ## Events processor
 
 This approach is designed to focus on *actions* that are required to be performed when pressing keys instead of focusing on keys itself. The main idea is to bind functions to keys using a configuration. The processor then cares of calling the functions when the according keys are pressed.
@@ -44,6 +80,7 @@ Changing of configuration can be performed unlimited number of times. It can als
 ### Example with configuring processor after starting
 
 ```c++
+#include "kbd_keys.h"
 #include "kbd_reader.h"
 
 int main() {
