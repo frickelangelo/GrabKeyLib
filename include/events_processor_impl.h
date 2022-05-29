@@ -28,7 +28,7 @@ public:
     void stop();
     void pause();
     void resume();
-    void process(keyboard::Key key);
+    void process(keyboard::Key key, std::vector<char> byte_sequence);
 
     EventsConfig get_config();
     void apply_config(const EventsConfig& config);

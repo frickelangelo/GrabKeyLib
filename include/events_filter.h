@@ -3,15 +3,16 @@
 #include "kbd_keys.h"
 #include <cstdint>
 #include <string>
+#include <vector>
 #include <unordered_set>
 #include <functional>
 
 namespace keyboard {
 
-using evt_handler = std::function<void(keyboard::Key)>;
+using evt_handler = std::function<void(Key, const std::vector<char>&)>;
 
 struct EventsFilter {
-    std::unordered_set<keyboard::Key> keys;
+    std::unordered_set<Key> keys;
     evt_handler handler;
 };
 

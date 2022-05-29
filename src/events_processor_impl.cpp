@@ -33,8 +33,11 @@ EventsProcessorImpl::~EventsProcessorImpl() {
 void EventsProcessorImpl::run() {
 
     _thread = std::thread([this] {
-        while (_reader.is_running())
-            process(_reader.get_key());
+        while (_reader.is_running()) {
+            std::vector<char> sequence;
+            auto key = _reader.get_key(sequence);
+            process(key, std::move(sequence));
+        }
     });
 
 }
@@ -45,7 +48,7 @@ void EventsProcessorImpl::stop() { _reader.stop(); }
 void EventsProcessorImpl::pause()  { _pause.exchange(true);  }
 void EventsProcessorImpl::resume() { _pause.exchange(false); }
 
-void EventsProcessorImpl::process(keyboard::Key key) {
+void EventsProcessorImpl::process(keyboard::Key key, std::vector<char> byte_sequence) {
     if (_pause.load())
         return;
 
@@ -53,12 +56,12 @@ void EventsProcessorImpl::process(keyboard::Key key) {
 
     if (keyboard::evt_handler handler = find_handler(key); handler) {
         if (_config.before_handler)
-            _config.before_handler(key);
+            _config.before_handler(key, byte_sequence);
 
-        handler(key);
+        handler(key, byte_sequence);
 
         if (_config.after_handler)
-            _config.after_handler(key);
+            _config.after_handler(key, byte_sequence);
     }
 
 }
