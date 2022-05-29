@@ -69,8 +69,6 @@ int main() {
 
 
 
-
-
 ## Events processor
 
 This approach is designed to focus on *actions* that are required to be performed when pressing keys instead of focusing on keys itself. The main idea is to bind functions to keys using a configuration. The processor then cares of calling the functions when the according keys are pressed.
@@ -80,6 +78,7 @@ Changing of configuration can be performed unlimited number of times. It can als
 ### Example with configuring processor after starting
 
 ```c++
+#include <iostream>
 #include "kbd_keys.h"
 #include "kbd_reader.h"
 
@@ -91,20 +90,27 @@ int main() {
     // acquire copy of the config (the operation is thread safe)
     auto config = processor.get_config();
     
-    // set the actions that are about to be executed before and after main handler
-    // config.before_handler = [](keyboard::Key) {}; // no need to set empty handler if no action required
-    config.after_handler   = [](keyboard::Key)     { std::cout << std::flush; };
+    // optionally set the handlers that are need to be executed before and after the main handler
+  	config.after_handler   = [](keyboard::Key, const std::vector<char>&) { std::cout << std::flush; };
+ 	  // config.before_handler = [](auto, auto) {}; - no need to set empty handler if no action required	
+  
+  	// the handlers btw are simply std::function<void(keyboard::Key, const std::vector<char>&)>
+  	// where the keyboard::Key is a pressed key and the vector of chars is ANSI sequence of the key
     
-    // set the default action - it is used when the pressed key doesn't configured to be handled
+    // set the default_handler which is invoked when the pressed key wasn't configured
     // or leave as is, without handler - no need to set empty handler if no action required
-    config.default_handler = [](keyboard::Key key) { std::cout << int(key);   };
+    config.default_handler = [](keyboard::Key, const std::vector<char>& s) { 
+      for (auto c : s) std::cout << c;
+    };
 
     // set the main key handlers
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::ESC   }, [&](keyboard::Key) { processor.stop();       } });
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::UP    }, [] (keyboard::Key) { std::cout << "\033[1A"; } });
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::DOWN  }, [] (keyboard::Key) { std::cout << "\033[1B"; } });
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::RIGHT }, [] (keyboard::Key) { std::cout << "\033[1C"; } });
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::LEFT  }, [] (keyboard::Key) { std::cout << "\033[1D"; } });
+    config.filters = { 
+        keyboard::EventsFilter{ { keyboard::Key::UP    }, [] (auto, auto) { std::cout << "\033[1A"; } },
+        keyboard::EventsFilter{ { keyboard::Key::DOWN  }, [] (auto, auto) { std::cout << "\033[1B"; } },
+        keyboard::EventsFilter{ { keyboard::Key::RIGHT }, [] (auto, auto) { std::cout << "\033[1C"; } },
+        keyboard::EventsFilter{ { keyboard::Key::LEFT  }, [] (auto, auto) { std::cout << "\033[1D"; } },
+        keyboard::EventsFilter{ { keyboard::Key::ESC   }, [&](auto, auto) { processor.stop();       } }
+    };
 
     // apply config (the operation is thread safe)
     processor.apply_config(config);
@@ -119,31 +125,39 @@ int main() {
 ### Example with configuring processor before starting
 
 ```c++
+#include <iostream>
+#include "kbd_keys.h"
 #include "kbd_reader.h"
 
 int main() {
     EventsConfig config;
 
-    // set the actions that are about to be executed before and after main handler
-    // config.before_handler = [](keyboard::Key) {}; // no need to set empty handler if no action required
-    config.after_handler   = [](keyboard::Key)     { std::cout << std::flush; };
+    // optionally set the handlers that are need to be executed before and after the main handler
+  	config.after_handler   = [](keyboard::Key, const std::vector<char>&) { std::cout << std::flush; };
+ 	  // config.before_handler = [](auto, auto) {}; - no need to set empty handler if no action required
 
-    // set the default action - it is used when the pressed key doesn't configured to be handled
+    // set the default_handler which is invoked when the pressed key wasn't configured
     // or leave as is, without handler - no need to set empty handler if no action required
-    config.default_handler = [](keyboard::Key key) { std::cout << int(key);   };
+    config.default_handler = [](keyboard::Key, const std::vector<char>& s) { 
+      for (auto c : s) std::cout << c;
+    };
 
     // set the main key handlers
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::UP    }, [] (keyboard::Key) { std::cout << "\033[1A"; } });
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::DOWN  }, [] (keyboard::Key) { std::cout << "\033[1B"; } });
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::RIGHT }, [] (keyboard::Key) { std::cout << "\033[1C"; } });
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::LEFT  }, [] (keyboard::Key) { std::cout << "\033[1D"; } });
+    config.filters = { 
+      keyboard::EventsFilter{ { keyboard::Key::UP    }, [] (auto, auto) { std::cout << "\033[1A"; } },
+      keyboard::EventsFilter{ { keyboard::Key::DOWN  }, [] (auto, auto) { std::cout << "\033[1B"; } },
+      keyboard::EventsFilter{ { keyboard::Key::RIGHT }, [] (auto, auto) { std::cout << "\033[1C"; } },
+      keyboard::EventsFilter{ { keyboard::Key::LEFT  }, [] (auto, auto) { std::cout << "\033[1D"; } }
+    };
 
     // run the events processor with the prepared config
     auto processor = keyboard::EventsProcessor::run(config);
 
     // config can be obtained and edited at any time
     auto config = processor.get_config();
-    config.filters.emplace_back(keyboard::EventsFilter{ { keyboard::Key::ESC   }, [&](keyboard::Key) { processor.stop();       } });
+    config.filters.emplace_back(
+    	keyboard::EventsFilter{ { keyboard::Key::ESC   }, [&](auto, auto) { processor.stop(); } }
+    );
     
     // and also be applied to the processor
     processor.apply_config(config);
