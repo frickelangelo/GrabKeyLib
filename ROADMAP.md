@@ -15,7 +15,6 @@
 - Build package (rpm/deb)
 - Documentation
 - License
-- Split build commands on debug and release
 - Cygwin support (no epoll - find workaround)
 - Performance optimization
 - Fix codestyle
