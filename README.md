@@ -2,8 +2,6 @@
 
 The library is designed to provide a simple way to control console application with keyboard.
 
-
-
 ## Simple keyboard reader
 
 The code below allows to control cursor's position in terminal with using keyboard arrow keys. Pressing ESC key will break the loop.
@@ -165,5 +163,62 @@ int main() {
     // keep the processor going and wait until it stop
     processor.join();
 } // main
+```
+
+
+
+## Build and Install
+
+### Linux and MacOS
+
+```bash
+git clone https://github.com/frickelangelo/GrabKeyLib.git
+mkdir GrabKeyLib/build && cd GrabKeyLib/build
+cmake .. && make
+```
+
+By default it builds a release version of the library.
+In case if you need a debug version - build with "CMAKE_BUILD_TYPE" option:
+
+```bash
+cmake -DCMAKE_BUILD_TYPE=Debug .. && make
+```
+
+To install the library into your system execute
+
+```bash
+make install
+```
+
+By default it copies the libraries by the next paths:
+
+```bash
+/usr/local/lib/libGrabKeyShared.so
+/usr/local/lib/libGrabKeyStatic.a
+```
+
+and the includes into the next directory:
+
+```bash
+/usr/local/include/grab-key/
+```
+
+You can add a prefix to the target installation path by using DESTDIR option:
+
+```bash
+make DESTDIR=/your/prefix install
+```
+
+The library then will be placed at
+
+```bash
+/your/prefix/usr/local/lib/libGrabKeyShared.so
+/your/prefix/usr/local/lib/libGrabKeyStatic.a
+```
+
+and the includes at
+
+```bash
+/your/prefix/usr/local/include/grab-key/
 ```
 
