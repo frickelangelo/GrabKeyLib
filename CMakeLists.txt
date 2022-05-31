@@ -50,7 +50,6 @@ set(HEADERS
     include/kbd_poller.h
     include/kbd_reader_impl.h
     include/kbd_reader.h
-    include/kbd_reader_mode.h
     include/raw_mode.h
 )
 
